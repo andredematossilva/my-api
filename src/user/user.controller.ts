@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Param, Post, Query, Redirect, Delete, Put } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import UserSearchDTO from './dtos/user-search.dto';
+import UserDTO from './dtos/user.dto';
 import { UserService } from './user.service';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) { }
@@ -18,13 +22,14 @@ export class UserController {
     }
 
     @Put(':id')
-    UpdateUser(@Param('id') id: string, @Body() user: any) {
+    UpdateUser(@Param('id') id: string, @Body() user: UserDTO) {
         console.log(id);
         return this.userService.update(id, user);
     }
 
     @Get()
-    getUsers(@Query('name') name: string) {
+    getUsers(@Query() params: UserSearchDTO) {
+        const { name } = params;
         if (name) {
             return this.userService.getUserByName(name);
         }
@@ -37,7 +42,7 @@ export class UserController {
     }
 
     @Post()
-    saveUser(@Body() user) {
+    saveUser(@Body() user: UserDTO) {
         return this.userService.saveUser(user);
     }
 }
